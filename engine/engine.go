@@ -80,7 +80,9 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 		spec.Settings.Password,
 	)
 	if err != nil {
-		for i :=0; i<60; i++ {
+		ctx, cancel := context.WithTimeout(ctx, time.Minute*15)
+		defer cancel()
+		for {
 			select {
 			case <- ctx.Done():
 				return ctx.Err()
@@ -97,17 +99,17 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 			)
 			if err == nil {
 				break
-			} else {
-				logger.FromContext(ctx).
-					WithError(err).
-					WithField("ip", spec.ip).
-					WithField("id", spec.Name).
-					Trace("failed to dial vm")
-				if client != nil {
-					client.Close()
-				}
-				time.Sleep(time.Second)
 			}
+			logger.FromContext(ctx).
+				WithError(err).
+				WithField("ip", spec.ip).
+				WithField("id", spec.Name).
+				Trace("failed to dial vm")
+
+			if client != nil {
+				client.Close()
+			}
+			time.Sleep(time.Second * 10)
 		}
 	}
 	if err != nil {
@@ -288,7 +290,7 @@ func (e *Engine) Run(ctx context.Context, specv runtime.Spec, stepv runtime.Step
 
 // Ping pings the underlying runtime to verify connectivity.
 func (e *Engine) Ping(ctx context.Context) error {
-	_, err := e.client.Token(ctx)
+	_, err := e.client.CheckToken(ctx)
 	return err
 }
 

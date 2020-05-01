@@ -58,15 +58,15 @@ type Config struct {
 	}
 
 	Macstadium struct {
-		Endpoint   string `envconfig:"DRONE_ORKA_ENDPOINT" default:"http://10.221.188.100"`
-		Token      string `envconfig:"DRONE_ORKA_TOKEN"`
+		Endpoint   string `envconfig:"DRONE_ORKA_ENDPOINT" required:"true" default:"http://10.221.188.100"`
+		Token      string `envconfig:"DRONE_ORKA_TOKEN"    required:"true"`
 		SkipVerify bool   `envconfig:"DRONE_ORKA_SKIP_VERIFY"`
 		Dump       bool   `envconfig:"DRONE_ORKA_HTTP_DUMP"`
 		DumpBody   bool   `envconfig:"DRONE_ORKA_HTTP_DUMP_BODY"`
 	}
 
 	VM struct {
-		Image    string `envconfig:"DRONE_VM_IMAGE"    default:"90GCatalinaSSH.img"`
+		Image    string `envconfig:"DRONE_VM_IMAGE"    required:"true"`
 		Compute  int    `envconfig:"DRONE_VM_CPU"      default:"12"`
 		Username string `envconfig:"DRONE_VM_USERNAME" default:"admin"`
 		Password string `envconfig:"DRONE_VM_PASSWORD" default:"admin"`

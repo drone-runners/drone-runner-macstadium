@@ -158,12 +158,24 @@ func (c *Compiler) Compile(ctx context.Context, args runtime.CompilerArgs) runti
 			},
 		}),
 		map[string]string{
-			"HOME":                homedir,
 			"DRONE_HOME":          sourcedir,
 			"DRONE_WORKSPACE":     sourcedir,
 			"GIT_TERMINAL_PROMPT": "0",
 		},
 	)
+
+	// create the netrc environment variables
+	if args.Netrc != nil && args.Netrc.Machine != "" {
+		envs["DRONE_NETRC_MACHINE"] = args.Netrc.Machine
+		envs["DRONE_NETRC_USERNAME"] = args.Netrc.Login
+		envs["DRONE_NETRC_PASSWORD"] = args.Netrc.Password
+		envs["DRONE_NETRC_FILE"] = fmt.Sprintf(
+			"machine %s login %s password %s",
+			args.Netrc.Machine,
+			args.Netrc.Login,
+			args.Netrc.Password,
+		)
+	}
 
 	match := manifest.Match{
 		Action:   args.Build.Action,

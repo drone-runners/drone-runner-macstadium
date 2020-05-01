@@ -8,8 +8,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/drone/runner-go/shell/bash"
+	"github.com/drone-runners/drone-runner-macstadium/engine/compiler/shell"
 	"github.com/drone/runner-go/shell/powershell"
+	"github.com/drone/runner-go/shell/bash"
 )
 
 // helper function returns the base temporary directory based
@@ -76,6 +77,6 @@ func genScript(os string, commands []string) string {
 	case "windows":
 		return powershell.Script(commands)
 	default:
-		return bash.Script(commands)
+		return shell.Script(commands)
 	}
 }

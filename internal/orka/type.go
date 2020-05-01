@@ -96,8 +96,8 @@ type (
 		} `json:"virtual_machine_resources"`
 	}
 
-	// TokenReponse provides the token API response.
-	TokenReponse struct {
+	// TokenResponse provides the token API response.
+	TokenResponse struct {
 		Message string `json:"message"`
 		Errors  []interface{} `json:"errors"`
 		Authenticated bool  `json:"authenticated"`

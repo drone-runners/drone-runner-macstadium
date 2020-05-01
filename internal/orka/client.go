@@ -64,8 +64,8 @@ func (c *Client) Check(ctx context.Context, name string) (*StatusResponse, error
    return out, err
 }
 
-// Token checks the token status
-func (c *Client) Token(ctx context.Context) (*TokenResponse, error) {
+// CheckToken checks the token status
+func (c *Client) CheckToken(ctx context.Context) (*TokenResponse, error) {
 	uri := fmt.Sprintf("%s/token", c.Endpoint)
 	out := new(TokenResponse)
 	err := c.Do("GET", uri, nil, out)

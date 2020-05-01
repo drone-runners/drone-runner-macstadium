@@ -1,6 +1,7 @@
   
 {
   "platform": {},
+  "name": "random",
   "root": "/tmp/drone-random",
   "files": [
     {
