@@ -64,6 +64,14 @@ func (c *Client) Check(ctx context.Context, name string) (*StatusResponse, error
    return out, err
 }
 
+// Token checks the token status
+func (c *Client) Token(ctx context.Context) (*TokenResponse, error) {
+	uri := fmt.Sprintf("%s/token", c.Endpoint)
+	out := new(TokenResponse)
+	err := c.Do("GET", uri, nil, out)
+	return out, err
+}
+
 // Do makes an http.Request to the target endpoint.
 func (s *Client) Do(method, endpoint string, in, out interface{}) error {
 	req, err := http.NewRequest(method, endpoint, nil)

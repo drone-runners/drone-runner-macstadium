@@ -288,12 +288,8 @@ func (e *Engine) Run(ctx context.Context, specv runtime.Spec, stepv runtime.Step
 
 // Ping pings the underlying runtime to verify connectivity.
 func (e *Engine) Ping(ctx context.Context) error {
-	// TODO optionally add code to ping the underlying
-	// service to verify credentials or connectivity. For
-	// example, the kubernetes runner might ping kubernetes
-	// to ensure the client can connect and is authorized
-	// to make requests.
-	return nil
+	_, err := e.client.Token(ctx)
+	return err
 }
 
 // helper function configures and dials the ssh server.
