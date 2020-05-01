@@ -1,0 +1,13 @@
+{
+    "message": "Successfully deployed VM",
+    "errors": [],
+    "ram": "30G",
+    "vcpu": "12",
+    "host_cpu": "12",
+    "ip": "10.221.188.13",
+    "ssh_port": "8822",
+    "screen_share_port": "5900",
+    "vm_id": "8f241ed4176b7",
+    "port_warnings": [],
+    "vnc_port": "5999"
+}

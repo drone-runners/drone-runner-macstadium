@@ -1,0 +1,13 @@
+kind: pipeline
+type: macstadium
+name: default
+
+clone:
+  disable: true
+
+steps:
+- name: build
+  image: golang
+  commands:
+  - go build
+  - go test

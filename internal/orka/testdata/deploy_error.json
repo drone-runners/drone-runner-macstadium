@@ -1,0 +1,17 @@
+{
+    "message": "",
+    "errors": [
+        {
+            "message": "No VM configurations exist"
+        }
+    ],
+    "ram": "",
+    "vcpu": "",
+    "host_cpu": "",
+    "ip": "",
+    "ssh_port": "",
+    "screen_share_port": "",
+    "vm_id": "",
+    "port_warnings": null,
+    "vnc_port": ""
+}

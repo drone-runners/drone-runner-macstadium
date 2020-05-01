@@ -1,0 +1,5 @@
+drone-runner-macstadium
+drone-runner-macstadium.exe
+release/*
+.env
+NOTES.md

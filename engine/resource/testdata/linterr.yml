@@ -1,0 +1,10 @@
+---
+kind: pipeline
+type: macstadium
+
+steps:
+- commands:
+  - go build
+  - go test
+
+...

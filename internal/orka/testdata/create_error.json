@@ -1,0 +1,8 @@
+{
+    "message": "",
+    "errors": [
+        {
+            "message": "VM name must consist of lower case alphanumeric characters or \"-\", start with an alphabetic character, and end with an alphanumeric character"
+        }
+    ]
+}

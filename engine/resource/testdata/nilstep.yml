@@ -1,0 +1,9 @@
+---
+kind: pipeline
+type: macstadium
+name: test
+
+steps:
+- ~
+
+...
