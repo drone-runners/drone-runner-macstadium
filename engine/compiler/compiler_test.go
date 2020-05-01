@@ -22,9 +22,9 @@ import (
 	"github.com/drone/runner-go/pipeline/runtime"
 	"github.com/drone/runner-go/secret"
 
+	"github.com/dchest/uniuri"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/dchest/uniuri"
 )
 
 var nocontext = context.Background()
@@ -99,7 +99,7 @@ func TestCompile_Secrets(t *testing.T) {
 	manifest, _ := manifest.ParseFile("testdata/secret.yml")
 
 	compiler := &Compiler{
-		Environ:  provider.Static(nil),
+		Environ: provider.Static(nil),
 		Secret: secret.StaticVars(map[string]string{
 			"token":       "3DA541559918A808C2402BBA5012F6C60B27661C",
 			"password":    "password",
@@ -160,7 +160,7 @@ func testCompile(t *testing.T, source, golden string) *engine.Spec {
 	}
 
 	compiler := &Compiler{
-		Environ:  provider.Static(nil),
+		Environ: provider.Static(nil),
 		Secret: secret.StaticVars(map[string]string{
 			"token":       "3DA541559918A808C2402BBA5012F6C60B27661C",
 			"password":    "password",
@@ -198,7 +198,6 @@ func testCompile(t *testing.T, source, golden string) *engine.Spec {
 	if diff := cmp.Diff(got, want, opts...); len(diff) != 0 {
 		t.Errorf(diff)
 	}
-
 	return got.(*engine.Spec)
 }
 

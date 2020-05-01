@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 
 	"github.com/drone-runners/drone-runner-macstadium/engine"
+	"github.com/drone-runners/drone-runner-macstadium/engine/compiler/shell"
 	"github.com/drone-runners/drone-runner-macstadium/engine/resource"
 
 	"github.com/drone/runner-go/clone"
@@ -58,7 +59,7 @@ func (c *Compiler) Compile(ctx context.Context, args runtime.CompilerArgs) runti
 	os := "posix"
 
 	spec := &engine.Spec{
-		Name:     random(),
+		Name: random(),
 		Settings: engine.Settings{
 			Compute:  c.Settings.Compute,
 			Image:    c.Settings.Image,
@@ -145,8 +146,8 @@ func (c *Compiler) Compile(ctx context.Context, args runtime.CompilerArgs) runti
 
 	// create the clone step, maybe
 	if pipeline.Clone.Disable == false {
-		clonepath := filepath.Join(scriptdir, "clone.sh")
-		clonefile := genScript(os,
+		clonepath := filepath.Join(scriptdir, "clone")
+		clonefile := shell.Script(
 			clone.Commands(
 				clone.Args{
 					Branch: args.Build.Target,
@@ -179,8 +180,8 @@ func (c *Compiler) Compile(ctx context.Context, args runtime.CompilerArgs) runti
 	// create steps
 	for _, src := range pipeline.Steps {
 		buildslug := slug.Make(src.Name)
-		buildpath := filepath.Join(scriptdir, buildslug + ".sh")
-		buildfile := genScript(os, src.Commands)
+		buildpath := filepath.Join(scriptdir, buildslug)
+		buildfile := shell.Script(src.Commands)
 
 		cmd, args := getCommand(os, buildpath)
 		dst := &engine.Step{

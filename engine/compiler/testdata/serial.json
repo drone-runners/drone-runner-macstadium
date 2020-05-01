@@ -1,62 +1,40 @@
 {
-  "platform": {},
   "name": "random",
-  "root": "/tmp/drone-random",
+  "settings": {},
   "files": [
     {
-      "path": "/tmp/drone-random/home",
+      "path": "/tmp/source",
       "mode": 448,
       "is_dir": true
     },
     {
-      "path": "/tmp/drone-random/home/drone",
+      "path": "/tmp/scripts",
       "mode": 448,
       "is_dir": true
-    },
-    {
-      "path": "/tmp/drone-random/drone",
-      "mode": 448,
-      "is_dir": true
-    },
-    {
-      "path": "/tmp/drone-random/drone/src",
-      "mode": 448,
-      "is_dir": true
-    },
-    {
-      "path": "/tmp/drone-random/opt",
-      "mode": 448,
-      "is_dir": true
-    },
-    {
-      "path": "/tmp/drone-random/home/drone/.netrc",
-      "mode": 384,
-      "data": "bWFjaGluZSBnaXRodWIuY29tIGxvZ2luIG9jdG9jYXQgcGFzc3dvcmQgY29ycmVjdC1ob3JzZS1iYXR0ZXJ5LXN0YXBsZQ=="
     }
   ],
   "steps": [
     {
       "args": [
         "-e",
-        "/tmp/drone-random/opt/clone"
+        "/tmp/scripts/clone"
       ],
       "command": "/bin/sh",
       "files": [
         {
-          "path": "/tmp/drone-random/opt/clone",
+          "path": "/tmp/scripts/clone",
           "mode": 448,
-          "data": "CnNldCAtZQoKZWNobyArICJnaXQgaW5pdCIKZ2l0IGluaXQKCmVjaG8gKyAiZ2l0IHJlbW90ZSBhZGQgb3JpZ2luICIKZ2l0IHJlbW90ZSBhZGQgb3JpZ2luIAoKZWNobyArICJnaXQgZmV0Y2ggIG9yaWdpbiArcmVmcy9oZWFkcy9tYXN0ZXI6IgpnaXQgZmV0Y2ggIG9yaWdpbiArcmVmcy9oZWFkcy9tYXN0ZXI6CgplY2hvICsgImdpdCBjaGVja291dCAgLWIgbWFzdGVyIgpnaXQgY2hlY2tvdXQgIC1iIG1hc3Rlcgo="
+          "data": "CgppZiBbICEgLXogIiR7RFJPTkVfTkVUUkNfRklMRX0iIF07IHRoZW4KCWVjaG8gJERST05FX05FVFJDX0ZJTEUgPiAkSE9NRS8ubmV0cmMKCWNobW9kIDYwMCAkSE9NRS8ubmV0cmMKZmkKdW5zZXQgRFJPTkVfU0NSSVBUCnVuc2V0IERST05FX05FVFJDX01BQ0hJTkUKdW5zZXQgRFJPTkVfTkVUUkNfVVNFUk5BTUUKdW5zZXQgRFJPTkVfTkVUUkNfUEFTU1dPUkQKdW5zZXQgRFJPTkVfTkVUUkNfRklMRQpzZXQgLWUKCgplY2hvICsgImdpdCBpbml0IgpnaXQgaW5pdAoKZWNobyArICJnaXQgcmVtb3RlIGFkZCBvcmlnaW4gIgpnaXQgcmVtb3RlIGFkZCBvcmlnaW4gCgplY2hvICsgImdpdCBmZXRjaCAgb3JpZ2luICtyZWZzL2hlYWRzL21hc3RlcjoiCmdpdCBmZXRjaCAgb3JpZ2luICtyZWZzL2hlYWRzL21hc3RlcjoKCmVjaG8gKyAiZ2l0IGNoZWNrb3V0ICAtYiBtYXN0ZXIiCmdpdCBjaGVja291dCAgLWIgbWFzdGVyCg=="
         }
       ],
-      "secrets": [],
       "name": "clone",
       "run_policy": "always",
-      "working_dir": "/tmp/drone-random/drone/src"
+      "working_dir": "/tmp/source"
     },
     {
       "args": [
         "-e",
-        "/tmp/drone-random/opt/build"
+        "/tmp/scripts/build"
       ],
       "command": "/bin/sh",
       "depends_on": [
@@ -64,19 +42,18 @@
       ],
       "files": [
         {
-          "path": "/tmp/drone-random/opt/build",
+          "path": "/tmp/scripts/build",
           "mode": 448,
-          "data": "CnNldCAtZQoKZWNobyArICJnbyBidWlsZCIKZ28gYnVpbGQK"
+          "data": "CgppZiBbICEgLXogIiR7RFJPTkVfTkVUUkNfRklMRX0iIF07IHRoZW4KCWVjaG8gJERST05FX05FVFJDX0ZJTEUgPiAkSE9NRS8ubmV0cmMKCWNobW9kIDYwMCAkSE9NRS8ubmV0cmMKZmkKdW5zZXQgRFJPTkVfU0NSSVBUCnVuc2V0IERST05FX05FVFJDX01BQ0hJTkUKdW5zZXQgRFJPTkVfTkVUUkNfVVNFUk5BTUUKdW5zZXQgRFJPTkVfTkVUUkNfUEFTU1dPUkQKdW5zZXQgRFJPTkVfTkVUUkNfRklMRQpzZXQgLWUKCgplY2hvICsgImdvIGJ1aWxkIgpnbyBidWlsZAo="
         }
       ],
-      "secrets": [],
       "name": "build",
-      "working_dir": "/tmp/drone-random/drone/src"
+      "working_dir": "/tmp/source"
     },
     {
       "args": [
         "-e",
-        "/tmp/drone-random/opt/test"
+        "/tmp/scripts/test"
       ],
       "command": "/bin/sh",
       "depends_on": [
@@ -84,14 +61,13 @@
       ],
       "files": [
         {
-          "path": "/tmp/drone-random/opt/test",
+          "path": "/tmp/scripts/test",
           "mode": 448,
-          "data": "CnNldCAtZQoKZWNobyArICJnbyB0ZXN0IgpnbyB0ZXN0Cg=="
+          "data": "CgppZiBbICEgLXogIiR7RFJPTkVfTkVUUkNfRklMRX0iIF07IHRoZW4KCWVjaG8gJERST05FX05FVFJDX0ZJTEUgPiAkSE9NRS8ubmV0cmMKCWNobW9kIDYwMCAkSE9NRS8ubmV0cmMKZmkKdW5zZXQgRFJPTkVfU0NSSVBUCnVuc2V0IERST05FX05FVFJDX01BQ0hJTkUKdW5zZXQgRFJPTkVfTkVUUkNfVVNFUk5BTUUKdW5zZXQgRFJPTkVfTkVUUkNfUEFTU1dPUkQKdW5zZXQgRFJPTkVfTkVUUkNfRklMRQpzZXQgLWUKCgplY2hvICsgImdvIHRlc3QiCmdvIHRlc3QK"
         }
       ],
-      "secrets": [],
       "name": "test",
-      "working_dir": "/tmp/drone-random/drone/src"
+      "working_dir": "/tmp/source"
     }
   ]
 }

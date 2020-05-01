@@ -11,7 +11,15 @@ import (
 	"github.com/drone-runners/drone-runner-macstadium/engine/resource"
 	"github.com/drone/drone-go/drone"
 	"github.com/drone/runner-go/manifest"
+	"github.com/drone/runner-go/shell/bash"
 )
+
+// helper function returns the shell command and arguments
+// based on the target platform to invoke the script
+func getCommand(os, script string) (string, []string) {
+	cmd, args := bash.Command()
+	return cmd, append(args, script)
+}
 
 // helper function returns true if the step is configured to
 // always run regardless of status.

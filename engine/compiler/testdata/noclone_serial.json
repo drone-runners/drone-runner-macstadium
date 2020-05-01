@@ -1,56 +1,34 @@
-  
 {
-  "platform": {},
   "name": "random",
-  "root": "/tmp/drone-random",
+  "settings": {},
   "files": [
     {
-      "path": "/tmp/drone-random/home",
+      "path": "/tmp/source",
       "mode": 448,
       "is_dir": true
     },
     {
-      "path": "/tmp/drone-random/home/drone",
+      "path": "/tmp/scripts",
       "mode": 448,
       "is_dir": true
-    },
-    {
-      "path": "/tmp/drone-random/drone",
-      "mode": 448,
-      "is_dir": true
-    },
-    {
-      "path": "/tmp/drone-random/drone/src",
-      "mode": 448,
-      "is_dir": true
-    },
-    {
-      "path": "/tmp/drone-random/opt",
-      "mode": 448,
-      "is_dir": true
-    },
-    {
-      "path": "/tmp/drone-random/home/drone/.netrc",
-      "mode": 384,
-      "data": "bWFjaGluZSBnaXRodWIuY29tIGxvZ2luIG9jdG9jYXQgcGFzc3dvcmQgY29ycmVjdC1ob3JzZS1iYXR0ZXJ5LXN0YXBsZQ=="
     }
   ],
   "steps": [
     {
       "args": [
         "-e",
-        "/tmp/drone-random/opt/build"
+        "/tmp/scripts/build"
       ],
       "command": "/bin/sh",
       "files": [
         {
-          "path": "/tmp/drone-random/opt/build",
+          "path": "/tmp/scripts/build",
           "mode": 448,
-          "data": "CnNldCAtZQoKZWNobyArICJnbyBidWlsZCIKZ28gYnVpbGQKCmVjaG8gKyAiZ28gdGVzdCIKZ28gdGVzdAo="
+          "data": "CgppZiBbICEgLXogIiR7RFJPTkVfTkVUUkNfRklMRX0iIF07IHRoZW4KCWVjaG8gJERST05FX05FVFJDX0ZJTEUgPiAkSE9NRS8ubmV0cmMKCWNobW9kIDYwMCAkSE9NRS8ubmV0cmMKZmkKdW5zZXQgRFJPTkVfU0NSSVBUCnVuc2V0IERST05FX05FVFJDX01BQ0hJTkUKdW5zZXQgRFJPTkVfTkVUUkNfVVNFUk5BTUUKdW5zZXQgRFJPTkVfTkVUUkNfUEFTU1dPUkQKdW5zZXQgRFJPTkVfTkVUUkNfRklMRQpzZXQgLWUKCgplY2hvICsgImdvIGJ1aWxkIgpnbyBidWlsZAoKZWNobyArICJnbyB0ZXN0IgpnbyB0ZXN0Cg=="
         }
       ],
       "name": "build",
-      "working_dir": "/tmp/drone-random/drone/src"
+      "working_dir": "/tmp/source"
     }
   ]
 }
