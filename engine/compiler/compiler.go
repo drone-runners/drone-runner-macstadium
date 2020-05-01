@@ -7,6 +7,7 @@ package compiler
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 
 	"github.com/drone-runners/drone-runner-macstadium/engine"
 	"github.com/drone-runners/drone-runner-macstadium/engine/resource"
@@ -66,40 +67,10 @@ func (c *Compiler) Compile(ctx context.Context, args runtime.CompilerArgs) runti
 		},
 	}
 
-	// IMPORTANT:
-	// this pipeline starter project is optimized for pipelines
-	// that execute all steps on the same host. It is not optimized
-	// for pipelines that execute each step inside a different
-	// linux container. If you are building a container-based pipeline
-	// please see the Docker runner source for inspiration.
-
-	// create the root directory
-	spec.Root = tempdir(os)
-
-	// creates a home directory in the root.
-	// note: mkdirall fails on windows so we need to create all
-	// directories in the tree.
-	homedir := join(os, spec.Root, "home", "drone")
-	spec.Files = append(spec.Files, &engine.File{
-		Path:  join(os, spec.Root, "home"),
-		Mode:  0700,
-		IsDir: true,
-	})
-	spec.Files = append(spec.Files, &engine.File{
-		Path:  homedir,
-		Mode:  0700,
-		IsDir: true,
-	})
-
 	// creates a source directory in the root.
 	// note: mkdirall fails on windows so we need to create all
 	// directories in the tree.
-	sourcedir := join(os, spec.Root, "drone", "src")
-	spec.Files = append(spec.Files, &engine.File{
-		Path:  join(os, spec.Root, "drone"),
-		Mode:  0700,
-		IsDir: true,
-	})
+	sourcedir := filepath.Join("/tmp", "source")
 	spec.Files = append(spec.Files, &engine.File{
 		Path:  sourcedir,
 		Mode:  0700,
@@ -107,28 +78,12 @@ func (c *Compiler) Compile(ctx context.Context, args runtime.CompilerArgs) runti
 	})
 
 	// creates the opt directory to hold all scripts.
+	scriptdir := filepath.Join("/tmp", "scripts")
 	spec.Files = append(spec.Files, &engine.File{
-		Path:  join(os, spec.Root, "opt"),
+		Path:  scriptdir,
 		Mode:  0700,
 		IsDir: true,
 	})
-
-	// creates the netrc file
-	if args.Netrc != nil && args.Netrc.Password != "" {
-		netrcfile := getNetrc(os)
-		netrcpath := join(os, homedir, netrcfile)
-		netrcdata := fmt.Sprintf(
-			"machine %s login %s password %s",
-			args.Netrc.Machine,
-			args.Netrc.Login,
-			args.Netrc.Password,
-		)
-		spec.Files = append(spec.Files, &engine.File{
-			Path: netrcpath,
-			Mode: 0600,
-			Data: []byte(netrcdata),
-		})
-	}
 
 	// list the global environment variables
 	globals, _ := c.Environ.List(ctx, &provider.Request{
@@ -190,7 +145,7 @@ func (c *Compiler) Compile(ctx context.Context, args runtime.CompilerArgs) runti
 
 	// create the clone step, maybe
 	if pipeline.Clone.Disable == false {
-		clonepath := join(os, spec.Root, "opt", getExt(os, "clone"))
+		clonepath := filepath.Join(scriptdir, "clone.sh")
 		clonefile := genScript(os,
 			clone.Commands(
 				clone.Args{
@@ -224,7 +179,7 @@ func (c *Compiler) Compile(ctx context.Context, args runtime.CompilerArgs) runti
 	// create steps
 	for _, src := range pipeline.Steps {
 		buildslug := slug.Make(src.Name)
-		buildpath := join(os, spec.Root, "opt", getExt(os, buildslug))
+		buildpath := filepath.Join(scriptdir, buildslug + ".sh")
 		buildfile := genScript(os, src.Commands)
 
 		cmd, args := getCommand(os, buildpath)

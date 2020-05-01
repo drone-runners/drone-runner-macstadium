@@ -18,7 +18,6 @@ type (
 		ip string
 
 		Name     string   `json:"name,omitempty"`
-		Root     string   `json:"root,omitempty"`
 		Settings Settings `json:"settings,omitempty"`
 		Files    []*File  `json:"files,omitempty"`
 		Steps    []*Step  `json:"steps,omitempty"`

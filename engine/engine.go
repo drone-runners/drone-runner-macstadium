@@ -133,18 +133,6 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 	}
 	defer clientftp.Close()
 
-	// the pipeline workspace is created before pipeline
-	// execution begins. All files and folders created during
-	// pipeline execution are isolated to this workspace.
-	err = mkdir(clientftp, spec.Root, 0777)
-	if err != nil {
-		logger.FromContext(ctx).
-			WithError(err).
-			WithField("path", spec.Root).
-			Error("cannot create workspace directory")
-		return err
-	}
-
 	// the pipeline specification may define global folders, such
 	// as the pipeline working directory, wich must be created
 	// before pipeline execution begins.
