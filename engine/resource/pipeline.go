@@ -34,6 +34,7 @@ type Pipeline struct {
 	Platform    manifest.Platform    `json:"platform,omitempty"`
 	Trigger     manifest.Conditions  `json:"conditions,omitempty"`
 
+	Settings    Settings          `json:"settings,omitempty"`
 	Environment map[string]string `json:"environment,omitempty"`
 	Steps       []*Step           `json:"steps,omitempty"`
 	Workspace   Workspace         `json:"workspace,omitempty"`
@@ -80,19 +81,25 @@ func (p *Pipeline) GetStep(name string) *Step {
 type (
 	// Step defines a Pipeline step.
 	Step struct {
-		Commands     []string                       `json:"commands,omitempty"`
-		Detach       bool                           `json:"detach,omitempty"`
-		DependsOn    []string                       `json:"depends_on,omitempty" yaml:"depends_on"`
-		Environment  map[string]*manifest.Variable  `json:"environment,omitempty"`
-		Failure      string                         `json:"failure,omitempty"`
-		Name         string                         `json:"name,omitempty"`
-		Shell        string                         `json:"shell,omitempty"`
-		When         manifest.Conditions            `json:"when,omitempty"`
-		WorkingDir   string                         `json:"working_dir,omitempty" yaml:"working_dir"`
+		Commands    []string                      `json:"commands,omitempty"`
+		Detach      bool                          `json:"detach,omitempty"`
+		DependsOn   []string                      `json:"depends_on,omitempty" yaml:"depends_on"`
+		Environment map[string]*manifest.Variable `json:"environment,omitempty"`
+		Failure     string                        `json:"failure,omitempty"`
+		Name        string                        `json:"name,omitempty"`
+		Shell       string                        `json:"shell,omitempty"`
+		When        manifest.Conditions           `json:"when,omitempty"`
+		WorkingDir  string                        `json:"working_dir,omitempty" yaml:"working_dir"`
 	}
 
 	// Workspace represents the pipeline workspace configuration.
 	Workspace struct {
 		Path string `json:"path,omitempty"`
+	}
+
+	// Settings provides virtual machine settings.
+	Settings struct {
+		Image   string `json:"image,omitempty"`
+		Compute int    `json:"cpu,omitempty" yaml:"cpu"`
 	}
 )

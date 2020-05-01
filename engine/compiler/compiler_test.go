@@ -160,7 +160,8 @@ func testCompile(t *testing.T, source, golden string) *engine.Spec {
 	}
 
 	compiler := &Compiler{
-		Environ: provider.Static(nil),
+		Settings: Settings{Image: "Drone.img"},
+		Environ:  provider.Static(nil),
 		Secret: secret.StaticVars(map[string]string{
 			"token":       "3DA541559918A808C2402BBA5012F6C60B27661C",
 			"password":    "password",

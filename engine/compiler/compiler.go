@@ -62,10 +62,16 @@ func (c *Compiler) Compile(ctx context.Context, args runtime.CompilerArgs) runti
 		Name: random(),
 		Settings: engine.Settings{
 			Compute:  c.Settings.Compute,
-			Image:    c.Settings.Image,
+			Image:    pipeline.Settings.Image,
 			Username: c.Settings.Username,
 			Password: c.Settings.Password,
 		},
+	}
+
+	// if the pipeline does not specify an image, fallback
+	// to the default image.
+	if spec.Settings.Image == "" {
+		spec.Settings.Image = c.Settings.Image
 	}
 
 	// creates a source directory in the root.
