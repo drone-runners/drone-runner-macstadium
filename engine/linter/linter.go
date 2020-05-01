@@ -12,7 +12,6 @@ import (
 	"github.com/drone/runner-go/manifest"
 )
 
-
 // Linter evaluates the pipeline against a set of
 // rules and returns an error if one or more of the
 // rules are broken.

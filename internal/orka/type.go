@@ -6,7 +6,7 @@ package orka
 
 // Config configures a virtual machine.
 type Config struct {
-	Name  string `json:"orka_vm_name"` 
+	Name  string `json:"orka_vm_name"`
 	Image string `json:"orka_base_image"` // 90GCatalinaSSH.img
 	CPU   int    `json:"orka_cpu_core"`   // 6
 	VCPU  int    `json:"vcpu_count"`      // 6
@@ -15,13 +15,13 @@ type Config struct {
 type (
 	// Response provides the API response.
 	Response struct {
-		Message string       `json:"message"`
-		Errors []interface{} `json:"errors"`
+		Message string        `json:"message"`
+		Errors  []interface{} `json:"errors"`
 	}
 
 	// CreateRequest provides the create API request.
 	CreateRequest struct {
-		Name  string `json:"orka_vm_name"` 
+		Name  string `json:"orka_vm_name"`
 		Image string `json:"orka_base_image"` // 90GCatalinaSSH.img
 		CPU   int    `json:"orka_cpu_core"`   // 6
 		VCPU  int    `json:"vcpu_count"`      // 6
@@ -38,14 +38,14 @@ type (
 
 	// CreateResponse provides the create API response.
 	CreateResponse struct {
-		Message string       `json:"message"`
-		Errors []interface{} `json:"errors"`
+		Message string        `json:"message"`
+		Errors  []interface{} `json:"errors"`
 	}
 
 	// DeleteResponse provides the delete API response.
 	DeleteResponse struct {
-		Message string       `json:"message"`
-		Errors []interface{} `json:"errors"`
+		Message string        `json:"message"`
+		Errors  []interface{} `json:"errors"`
 	}
 
 	// DeployResponse provides the deployment API response.
@@ -65,7 +65,7 @@ type (
 
 	// StatusResponse provides the status API response.
 	StatusResponse struct {
-		Message string `json:"message"`
+		Message                 string        `json:"message"`
 		Errors                  []interface{} `json:"errors"`
 		VirtualMachineResources []struct {
 			VirtualMachineName string `json:"virtual_machine_name"`
@@ -98,10 +98,10 @@ type (
 
 	// TokenResponse provides the token API response.
 	TokenResponse struct {
-		Message string `json:"message"`
-		Errors  []interface{} `json:"errors"`
-		Authenticated bool  `json:"authenticated"`
-		IsTokenRevoked bool `json:"is_token_revoked"`
-		Email string `json:"email"`
+		Message        string        `json:"message"`
+		Errors         []interface{} `json:"errors"`
+		Authenticated  bool          `json:"authenticated"`
+		IsTokenRevoked bool          `json:"is_token_revoked"`
+		Email          string        `json:"email"`
 	}
 )

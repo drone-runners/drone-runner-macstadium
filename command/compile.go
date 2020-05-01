@@ -28,10 +28,10 @@ import (
 type compileCommand struct {
 	*internal.Flags
 
-	Source     *os.File
-	Environ    map[string]string
-	Secrets    map[string]string
-	Settings   compiler.Settings
+	Source   *os.File
+	Environ  map[string]string
+	Secrets  map[string]string
+	Settings compiler.Settings
 }
 
 func (c *compileCommand) run(*kingpin.ParseContext) error {
@@ -91,9 +91,9 @@ func (c *compileCommand) run(*kingpin.ParseContext) error {
 
 	// compile the pipeline to an intermediate representation.
 	comp := &compiler.Compiler{
-		Environ:    provider.Static(c.Environ),
-		Settings:   c.Settings,
-		Secret:     secret.StaticVars(c.Secrets),
+		Environ:  provider.Static(c.Environ),
+		Settings: c.Settings,
+		Secret:   secret.StaticVars(c.Secrets),
 	}
 
 	args := runtime.CompilerArgs{

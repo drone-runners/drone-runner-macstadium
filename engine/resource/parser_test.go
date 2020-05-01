@@ -63,10 +63,10 @@ func TestParse(t *testing.T) {
 						"go test",
 					},
 					Environment: map[string]*manifest.Variable{
-						"GOOS":   &manifest.Variable{Value: "linux"},
-						"GOARCH": &manifest.Variable{Value: "arm64"},
+						"GOOS":   {Value: "linux"},
+						"GOARCH": {Value: "arm64"},
 					},
-					Failure:      "ignore",
+					Failure: "ignore",
 					When: manifest.Conditions{
 						Event: manifest.Condition{
 							Include: []string{"push"},

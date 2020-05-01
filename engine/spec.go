@@ -33,17 +33,17 @@ type (
 
 	// Step defines a pipeline step.
 	Step struct {
-		Args         []string          `json:"args,omitempty"`
-		Command      string            `json:"command,omitempty"`
-		Detach       bool              `json:"detach,omitempty"`
-		DependsOn    []string          `json:"depends_on,omitempty"`
-		ErrPolicy    runtime.ErrPolicy `json:"err_policy,omitempty"`
-		Envs         map[string]string `json:"environment,omitempty"`
-		Files        []*File           `json:"files,omitempty"`
-		Name         string            `json:"name,omitempt"`
-		RunPolicy    runtime.RunPolicy `json:"run_policy,omitempty"`
-		Secrets      []*Secret         `json:"secrets,omitempty"`
-		WorkingDir   string            `json:"working_dir,omitempty"`
+		Args       []string          `json:"args,omitempty"`
+		Command    string            `json:"command,omitempty"`
+		Detach     bool              `json:"detach,omitempty"`
+		DependsOn  []string          `json:"depends_on,omitempty"`
+		ErrPolicy  runtime.ErrPolicy `json:"err_policy,omitempty"`
+		Envs       map[string]string `json:"environment,omitempty"`
+		Files      []*File           `json:"files,omitempty"`
+		Name       string            `json:"name,omitempt"`
+		RunPolicy  runtime.RunPolicy `json:"run_policy,omitempty"`
+		Secrets    []*Secret         `json:"secrets,omitempty"`
+		WorkingDir string            `json:"working_dir,omitempty"`
 	}
 
 	// Secret represents a secret variable.

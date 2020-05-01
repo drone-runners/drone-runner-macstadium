@@ -40,19 +40,19 @@ import (
 type execCommand struct {
 	*internal.Flags
 
-	Source     *os.File
-	Include    []string
-	Exclude    []string
-	Environ    map[string]string
-	Secrets    map[string]string
-	Settings   compiler.Settings
-	Endpoint   string
-	Token      string
-	Pretty     bool
-	Procs      int64
-	Debug      bool
-	Trace      bool
-	Dump       bool
+	Source   *os.File
+	Include  []string
+	Exclude  []string
+	Environ  map[string]string
+	Secrets  map[string]string
+	Settings compiler.Settings
+	Endpoint string
+	Token    string
+	Pretty   bool
+	Procs    int64
+	Debug    bool
+	Trace    bool
+	Dump     bool
 }
 
 func (c *execCommand) run(*kingpin.ParseContext) error {
@@ -112,12 +112,11 @@ func (c *execCommand) run(*kingpin.ParseContext) error {
 
 	// compile the pipeline to an intermediate representation.
 	comp := &compiler.Compiler{
-		Environ:    provider.Static(c.Environ),
-		Settings:   c.Settings,
-		Secret:     secret.StaticVars(c.Secrets),
+		Environ:  provider.Static(c.Environ),
+		Settings: c.Settings,
+		Secret:   secret.StaticVars(c.Secrets),
 	}
 
-	
 	args := runtime.CompilerArgs{
 		Pipeline: res,
 		Manifest: manifest,
@@ -290,7 +289,7 @@ func registerExec(app *kingpin.Application) {
 	//
 	// custom macstadium parameters
 	//
- 
+
 	cmd.Flag("cpu", "orka cpu count").
 		Default("12").
 		IntVar(&c.Settings.Compute)

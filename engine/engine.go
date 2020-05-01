@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/drone/runner-go/pipeline/runtime"
-	"github.com/drone/runner-go/logger"
 	"github.com/drone-runners/drone-runner-macstadium/internal/orka"
+	"github.com/drone/runner-go/logger"
+	"github.com/drone/runner-go/pipeline/runtime"
 
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
@@ -84,7 +84,7 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 		defer cancel()
 		for {
 			select {
-			case <- ctx.Done():
+			case <-ctx.Done():
 				return ctx.Err()
 			default:
 			}
