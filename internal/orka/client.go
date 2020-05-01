@@ -13,6 +13,8 @@ import (
 	"net/http"
 
 	"github.com/drone/runner-go/logger"
+
+	"github.com/hashicorp/go-multierror"
 )
 
 // Client provides a macstadium client.
@@ -24,7 +26,7 @@ type Client struct {
 }
 
 // Create creates a deployment.
-func (c *Client) Create(ctx context.Context, config *Config) (*CreateResponse, error) {
+func (c *Client) Create(ctx context.Context, config *Config) (*Response, error) {
 	in := map[string]interface{}{
 		"orka_vm_name":    config.Name,
 		"orka_base_image": config.Image,
@@ -33,9 +35,12 @@ func (c *Client) Create(ctx context.Context, config *Config) (*CreateResponse, e
 		"vcpu_count":      config.VCPU,
 	}
 	uri := fmt.Sprintf("%s/resources/vm/create", c.Endpoint)
-	out := new(CreateResponse)
-	err := c.Do("POST", uri, &in, out)
-	return out, err
+	out := new(Response)
+	err := c.do("POST", uri, &in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, getErrors(*out)
 }
 
 // Deploy deploys a virtual machine.
@@ -43,37 +48,49 @@ func (c *Client) Deploy(ctx context.Context, name string) (*DeployResponse, erro
 	in := map[string]string{"orka_vm_name": name}
 	uri := fmt.Sprintf("%s/resources/vm/deploy", c.Endpoint)
 	out := new(DeployResponse)
-	err := c.Do("POST", uri, &in, out)
-	return out, err
+	err := c.do("POST", uri, &in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, getErrors(out.Response)
 }
 
 // Delete deletes a deployment and deployment configuration.
-func (c *Client) Delete(ctx context.Context, name string) (*DeleteResponse, error) {
+func (c *Client) Delete(ctx context.Context, name string) (*Response, error) {
 	in := map[string]string{"orka_vm_name": name}
 	uri := fmt.Sprintf("%s/resources/vm/purge", c.Endpoint)
-	out := new(DeleteResponse)
-	err := c.Do("DELETE", uri, &in, out)
-	return out, err
+	out := new(Response)
+	err := c.do("DELETE", uri, &in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, getErrors(*out)
 }
 
 // Check checks the virtual machine status.
 func (c *Client) Check(ctx context.Context, name string) (*StatusResponse, error) {
 	uri := fmt.Sprintf("%s/resources/vm/status/%s", c.Endpoint, name)
 	out := new(StatusResponse)
-	err := c.Do("GET", uri, nil, out)
-	return out, err
+	err := c.do("GET", uri, nil, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, getErrors(out.Response)
 }
 
 // CheckToken checks the token status
 func (c *Client) CheckToken(ctx context.Context) (*TokenResponse, error) {
 	uri := fmt.Sprintf("%s/token", c.Endpoint)
 	out := new(TokenResponse)
-	err := c.Do("GET", uri, nil, out)
-	return out, err
+	err := c.do("GET", uri, nil, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, getErrors(out.Response)
 }
 
-// Do makes an http.Request to the target endpoint.
-func (s *Client) Do(method, endpoint string, in, out interface{}) error {
+// do makes an http.Request to the target endpoint.
+func (c *Client) do(method, endpoint string, in, out interface{}) error {
 	req, err := http.NewRequest(method, endpoint, nil)
 	if err != nil {
 		return err
@@ -88,13 +105,13 @@ func (s *Client) Do(method, endpoint string, in, out interface{}) error {
 		req.Header.Set("Content-Type", "application/json")
 	}
 
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", s.Token))
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.Token))
 
-	if s.Dumper != nil {
-		s.Dumper.DumpRequest(req)
+	if c.Dumper != nil {
+		c.Dumper.DumpRequest(req)
 	}
 
-	res, err := s.client().Do(req)
+	res, err := c.client().Do(req)
 	if res != nil && res.Body != nil {
 		defer res.Body.Close()
 	}
@@ -102,8 +119,8 @@ func (s *Client) Do(method, endpoint string, in, out interface{}) error {
 		return err
 	}
 
-	if s.Dumper != nil {
-		s.Dumper.DumpResponse(res)
+	if c.Dumper != nil {
+		c.Dumper.DumpResponse(res)
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
@@ -114,9 +131,17 @@ func (s *Client) Do(method, endpoint string, in, out interface{}) error {
 	return json.Unmarshal(body, out)
 }
 
-func (s *Client) client() *http.Client {
-	if s.Client == nil {
+func (c *Client) client() *http.Client {
+	if c.Client == nil {
 		return http.DefaultClient
 	}
-	return s.Client
+	return c.Client
+}
+
+func getErrors(r Response) error {
+	var result error
+	for _, err := range r.Errors {
+		result = multierror.Append(result, err)
+	}
+	return result
 }

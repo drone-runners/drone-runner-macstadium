@@ -7,51 +7,41 @@ package orka
 // Config configures a virtual machine.
 type Config struct {
 	Name  string `json:"orka_vm_name"`
-	Image string `json:"orka_base_image"` // 90GCatalinaSSH.img
-	CPU   int    `json:"orka_cpu_core"`   // 6
-	VCPU  int    `json:"vcpu_count"`      // 6
+	Image string `json:"orka_base_image"`
+	CPU   int    `json:"orka_cpu_core"`
+	VCPU  int    `json:"vcpu_count"`
 }
 
 type (
 	// Response provides the API response.
 	Response struct {
-		Message string        `json:"message"`
-		Errors  []interface{} `json:"errors"`
+		Message string   `json:"message"`
+		Errors  []*Error `json:"errors"`
 	}
 
 	// CreateRequest provides the create API request.
+	//
+	//     {
+	// 	    "orka_vm_name": "myorkavm",
+	// 	    "orka_base_image": "myStorage.img",
+	// 	    "orka_image": "myorkavm",
+	// 	    "orka_cpu_core": 6,
+	// 	    "vcpu_count": 6,
+	// 	    "iso_image": "Mojave.iso"
+	//     }
+	//
+	// TODO(bradrydzewski) model the full json structure (above) and
+	// replace and remove the Config struct with this struct.
 	CreateRequest struct {
 		Name  string `json:"orka_vm_name"`
-		Image string `json:"orka_base_image"` // 90GCatalinaSSH.img
-		CPU   int    `json:"orka_cpu_core"`   // 6
-		VCPU  int    `json:"vcpu_count"`      // 6
-
-		// {
-		// 	"orka_vm_name": "myorkavm",
-		// 	"orka_base_image": "myStorage.img",
-		// 	"orka_image": "myorkavm",
-		// 	"orka_cpu_core": 6,
-		// 	"vcpu_count": 6,
-		// 	"iso_image": "Mojave.iso"
-		// }
-	}
-
-	// CreateResponse provides the create API response.
-	CreateResponse struct {
-		Message string        `json:"message"`
-		Errors  []interface{} `json:"errors"`
-	}
-
-	// DeleteResponse provides the delete API response.
-	DeleteResponse struct {
-		Message string        `json:"message"`
-		Errors  []interface{} `json:"errors"`
+		Image string `json:"orka_base_image"`
+		CPU   int    `json:"orka_cpu_core"`
+		VCPU  int    `json:"vcpu_count"`
 	}
 
 	// DeployResponse provides the deployment API response.
 	DeployResponse struct {
-		Message         string        `json:"message"`
-		Errors          []interface{} `json:"errors"`
+		Response
 		RAM             string        `json:"ram"`
 		VCPU            string        `json:"vcpu"`
 		HostCPU         string        `json:"host_cpu"`
@@ -65,8 +55,7 @@ type (
 
 	// StatusResponse provides the status API response.
 	StatusResponse struct {
-		Message                 string        `json:"message"`
-		Errors                  []interface{} `json:"errors"`
+		Response
 		VirtualMachineResources []struct {
 			VirtualMachineName string `json:"virtual_machine_name"`
 			VMDeploymentStatus string `json:"vm_deployment_status"`
@@ -98,10 +87,19 @@ type (
 
 	// TokenResponse provides the token API response.
 	TokenResponse struct {
-		Message        string        `json:"message"`
-		Errors         []interface{} `json:"errors"`
-		Authenticated  bool          `json:"authenticated"`
-		IsTokenRevoked bool          `json:"is_token_revoked"`
-		Email          string        `json:"email"`
+		Response
+		Authenticated  bool   `json:"authenticated"`
+		IsTokenRevoked bool   `json:"is_token_revoked"`
+		Email          string `json:"email"`
 	}
 )
+
+// Error represents an API error.
+type Error struct {
+	Message string `json:"message"`
+}
+
+// Error returns the error message.
+func (e *Error) Error() string {
+	return e.Message
+}

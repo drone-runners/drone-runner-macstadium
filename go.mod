@@ -9,12 +9,13 @@ require (
 	github.com/dchest/uniuri v0.0.0-20160212164326-8902c56451e9
 	github.com/drone/drone-go v1.2.1-0.20200326064413-195394da1018
 	github.com/drone/envsubst v1.0.2
-	github.com/drone/runner-go v1.6.1-0.20200415215637-a82f0982f1be
+	github.com/drone/runner-go v1.6.1-0.20200501170233-98e945f20c7b
 	github.com/drone/signal v1.0.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/golang/mock v1.3.1
 	github.com/google/go-cmp v0.3.0
 	github.com/gosimple/slug v1.9.0
+	github.com/h2non/gock v1.0.9
 	github.com/hashicorp/go-multierror v1.0.0
 	github.com/joho/godotenv v1.3.0
 	github.com/kelseyhightower/envconfig v1.4.0
