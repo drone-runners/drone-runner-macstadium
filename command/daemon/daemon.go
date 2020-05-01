@@ -64,17 +64,17 @@ func (c *daemonCommand) run(*kingpin.ParseContext) error {
 		cancel()
 	})
 
-	cli := client.New(
+	cli := client.NewSingleFlight(
 		config.Client.Address,
 		config.Client.Secret,
 		config.Client.SkipVerify,
 	)
 	if config.Client.Dump {
-		cli.Dumper = logger.StandardDumper(
+		cli.Client.(*client.HTTPClient).Dumper = logger.StandardDumper(
 			config.Client.DumpBody,
 		)
 	}
-	cli.Logger = logger.Logrus(
+	cli.Client.(*client.HTTPClient).Logger = logger.Logrus(
 		logrus.NewEntry(
 			logrus.StandardLogger(),
 		),

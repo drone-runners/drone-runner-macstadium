@@ -294,11 +294,6 @@ func registerExec(app *kingpin.Application) {
 		Default("12").
 		IntVar(&c.Settings.Compute)
 
-	cmd.Flag("image", "orka base image").
-		Default("90GCatalinaSSH.img").
-		Envar("DRONE_ORKA_IMAGE").
-		StringVar(&c.Settings.Image)
-
 	cmd.Flag("endpoint", "orka endpoint").
 		Default("http://10.221.188.100").
 		Envar("DRONE_ORKA_ENDPOINT").
@@ -307,6 +302,10 @@ func registerExec(app *kingpin.Application) {
 	cmd.Flag("token", "orka token").
 		Envar("DRONE_ORKA_TOKEN").
 		StringVar(&c.Token)
+
+	cmd.Flag("image", "orka base image").
+		Envar("DRONE_VM_IMAGE").
+		StringVar(&c.Settings.Image)
 
 	cmd.Flag("username", "image ssh username").
 		Default("admin").
