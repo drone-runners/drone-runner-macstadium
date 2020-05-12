@@ -7,8 +7,8 @@ package orka
 import (
 	"bytes"
 	"context"
-   "encoding/json"
-   "errors"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -146,10 +146,10 @@ func (c *Client) client() *http.Client {
 func getErrors(r Response) error {
 	var result error
 	for _, err := range r.Errors {
-      switch err.Message {
-      case ErrInsufficientCPU.Error():
-         return ErrInsufficientCPU
-      }
+		switch err.Message {
+		case ErrInsufficientCPU.Error():
+			return ErrInsufficientCPU
+		}
 		result = multierror.Append(result, err)
 	}
 	return result
