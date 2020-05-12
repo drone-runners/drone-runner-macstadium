@@ -7,7 +7,8 @@ package orka
 import (
 	"bytes"
 	"context"
-	"encoding/json"
+   "encoding/json"
+   "errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -16,6 +17,10 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 )
+
+// ErrInsufficientCPU is returned when the cluster has insufficient CPU
+// to deploy the virtual machine.
+var ErrInsufficientCPU = errors.New("No available nodes with sufficient CPU.")
 
 // Client provides a macstadium client.
 type Client struct {
@@ -141,6 +146,10 @@ func (c *Client) client() *http.Client {
 func getErrors(r Response) error {
 	var result error
 	for _, err := range r.Errors {
+      switch err.Message {
+      case ErrInsufficientCPU.Error():
+         return ErrInsufficientCPU
+      }
 		result = multierror.Append(result, err)
 	}
 	return result

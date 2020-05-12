@@ -20,6 +20,8 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+const networkTimeout = time.Minute * 10
+
 // Engine implements a pipeline engine.
 type Engine struct {
 	client   *orka.Client
@@ -57,70 +59,21 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 
 	logger.FromContext(ctx).
 		WithField("id", spec.Name).
-		Debug("deploy the vm")
+		Debug("provision the vm")
 
-	// deploy the vm configuration.
-	deploy, err := e.client.Deploy(ctx, spec.Name)
-	if err != nil {
-		logger.FromContext(ctx).
-			WithError(err).
-			WithField("id", spec.Name).
-			Debug("failed to deploy the vm")
-		return err
-	}
-
-	// snapshot the ip address and port.
-	spec.ip = deploy.IP + ":" + deploy.SSHPort
-
-	// establish an ssh connection with the server instance
-	// to setup the build environment (upload build scripts, etc)
-	client, err := dial(
-		spec.ip,
-		spec.Settings.Username,
-		spec.Settings.Password,
-	)
-	if err != nil {
-		ctx, cancel := context.WithTimeout(ctx, time.Minute*15)
-		defer cancel()
-		for {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-			}
-			logger.FromContext(ctx).
-				WithField("ip", spec.ip).
-				WithField("id", spec.Name).
-				Trace("dialing the vm")
-			client, err = dial(
-				spec.ip,
-				spec.Settings.Username,
-				spec.Settings.Password,
-			)
-			if err == nil {
-				break
-			}
-			logger.FromContext(ctx).
-				WithError(err).
-				WithField("ip", spec.ip).
-				WithField("id", spec.Name).
-				Trace("failed to dial vm")
-
-			if client != nil {
-				client.Close()
-			}
-			time.Sleep(time.Second * 10)
-		}
+	// provision the virtual machine and return an
+	// active ssh client connection.
+	client, err := e.createRetry(ctx, spec)
+	if client != nil {
+		defer client.Close()
 	}
 	if err != nil {
 		logger.FromContext(ctx).
 			WithError(err).
-			WithField("ip", spec.ip).
 			WithField("id", spec.Name).
-			Debug("failed to dial vm")
+			Debug("failed to provision the vm")
 		return err
 	}
-	defer client.Close()
 
 	clientftp, err := sftp.NewClient(client)
 	if err != nil {
@@ -176,7 +129,9 @@ func (e *Engine) Setup(ctx context.Context, specv runtime.Spec) error {
 // Destroy the pipeline environment.
 func (e *Engine) Destroy(ctx context.Context, specv runtime.Spec) error {
 	spec := specv.(*Spec)
-
+	if spec.ip == "" {
+		return nil
+	}
 	logger.FromContext(ctx).
 		WithField("ip", spec.ip).
 		WithField("id", spec.Name).
@@ -280,6 +235,192 @@ func (e *Engine) Run(ctx context.Context, specv runtime.Spec, stepv runtime.Step
 func (e *Engine) Ping(ctx context.Context) error {
 	_, err := e.client.CheckToken(ctx)
 	return err
+}
+
+//
+// helper functions
+//
+
+func (e *Engine) createRetry(ctx context.Context, spec *Spec) (*ssh.Client, error) {
+	client, err := e.create(ctx, spec)
+	if err == nil {
+		return client, nil
+	}
+
+	ctx, cancel := context.WithTimeout(ctx, time.Hour)
+	defer cancel()
+	for {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+		}
+
+		client, err := e.create(ctx, spec)
+		if err == nil {
+			return client, nil
+		}
+
+		switch {
+		case strings.Contains(err.Error(), "No available nodes"):
+		case strings.Contains(err.Error(), "network is unreachable"):
+		default:
+			return nil, err
+		}
+
+		logger.FromContext(ctx).
+			WithField("ip", spec.ip).
+			WithField("id", spec.Name).
+			Trace("retry to deploy the vm")
+
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-time.After(time.Minute):
+		}
+	}
+}
+
+func (e *Engine) create(ctx context.Context, spec *Spec) (*ssh.Client, error) {
+	logger.FromContext(ctx).
+		WithField("id", spec.Name).
+		Debug("deploy the vm")
+
+	deploy, err := e.client.Deploy(ctx, spec.Name)
+	if err != nil {
+		logger.FromContext(ctx).
+			WithError(err).
+			WithField("id", spec.Name).
+			Debug("failed to deploy the vm")
+		return nil, err
+	}
+
+	// snapshot the ip address and port.
+	spec.ip = deploy.IP + ":" + deploy.SSHPort
+
+	logger.FromContext(ctx).
+		WithField("id", spec.Name).
+		WithField("ip", spec.ip).
+		Debug("successfully deployed the vm")
+
+	logger.FromContext(ctx).
+		WithField("ip", spec.ip).
+		WithField("id", spec.Name).
+		Trace("dialing the vm")
+
+	// establish an ssh connection with the server instance
+	// to setup the build environment (upload build scripts, etc)
+	client, err := dialRetry(ctx, spec)
+	if err == nil {
+		logger.FromContext(ctx).
+			WithField("ip", spec.ip).
+			WithField("id", spec.Name).
+			Trace("successfully dialed the vm")
+		return client, nil
+	}
+
+	logger.FromContext(ctx).
+		WithField("ip", spec.ip).
+		WithField("id", spec.Name).
+		Trace("failed to dial the vm")
+
+	// if the vm fails to properly deploy it is destroyed
+	// and retried. if destroying the vm fails the
+	// the error is ignored, since this should not prevent
+	// subsequent retries.
+	_ = e.Destroy(ctx, spec)
+
+	return nil, err
+
+	// ctx, cancel := context.WithTimeout(ctx, networkTimeout)
+	// defer cancel()
+	// for {
+	// 	select {
+	// 	case <-ctx.Done():
+	// 		return nil, ctx.Err()
+	// 	default:
+	// 	}
+	// 	logger.FromContext(ctx).
+	// 		WithField("ip", spec.ip).
+	// 		WithField("id", spec.Name).
+	// 		Trace("dialing the vm")
+	// 	client, err = dial(
+	// 		spec.ip,
+	// 		spec.Settings.Username,
+	// 		spec.Settings.Password,
+	// 	)
+	// 	if err == nil {
+	// 		return client, nil
+	// 	}
+	// 	logger.FromContext(ctx).
+	// 		WithError(err).
+	// 		WithField("ip", spec.ip).
+	// 		WithField("id", spec.Name).
+	// 		Trace("failed to dial vm")
+
+	// 	if client != nil {
+	// 		client.Close()
+	// 	}
+
+	// 	select {
+	// 	case <-ctx.Done():
+	// 		return nil, ctx.Err()
+	// 	case <-time.After(time.Second * 10):
+	// 	}
+	// }
+}
+
+// helper function configures and dials the ssh server and
+// retries until a connection is established or a timeout
+// is reached.
+func dialRetry(ctx context.Context, spec *Spec) (*ssh.Client, error) {
+	client, err := dial(
+		spec.ip,
+		spec.Settings.Username,
+		spec.Settings.Password,
+	)
+	if err == nil {
+		return client, nil
+	}
+
+	ctx, cancel := context.WithTimeout(ctx, networkTimeout)
+	defer cancel()
+	for i := 0; ; i++ {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+		}
+		logger.FromContext(ctx).
+			WithField("ip", spec.ip).
+			WithField("id", spec.Name).
+			WithField("attempt", i).
+			Trace("dialing the vm")
+		client, err = dial(
+			spec.ip,
+			spec.Settings.Username,
+			spec.Settings.Password,
+		)
+		if err == nil {
+			return client, nil
+		}
+		logger.FromContext(ctx).
+			WithError(err).
+			WithField("ip", spec.ip).
+			WithField("id", spec.Name).
+			WithField("attempt", i).
+			Trace("failed to re-dial vm")
+
+		if client != nil {
+			client.Close()
+		}
+
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-time.After(time.Second * 10):
+		}
+	}
 }
 
 // helper function configures and dials the ssh server.
